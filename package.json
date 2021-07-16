@@ -1,0 +1,23 @@
+{
+  "name": "glob-to-files",
+  "version": "0.0.0",
+  "description": "Match provided glob paths to file objects with readable stream",
+  "main": "src/index.js",
+  "author": "vasco-santos",
+  "license": "(Apache-2.0 AND MIT)",
+  "type": "module",
+  "scripts": {
+    "test": "ava --verbose 'test/*.spec.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vasco-santos/glob-to-files.git"
+  },
+  "dependencies": {
+    "err-code": "^3.0.1",
+    "it-glob": "^0.0.13"
+  },
+  "devDependencies": {
+    "ava": "^3.15.0"
+  }
+}
