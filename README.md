@@ -36,3 +36,7 @@ The following parameters can be provided to `filesFromPath`.
 | [options.preserveMtime] | `boolean` | preserve mtime |
 
 It `yields` file like objects in the form of `{ name: String, stream: AsyncIterator<Buffer> }`
+
+## Releasing
+
+You can publish by either running npm publish in the dist directory or using npx ipjs publish.

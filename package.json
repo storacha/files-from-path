@@ -11,10 +11,6 @@
       ]
     }
   },
-  "files": [
-    "src",
-    "dist"
-  ],
   "type": "module",
   "author": "vasco-santos",
   "license": "(Apache-2.0 AND MIT)",
