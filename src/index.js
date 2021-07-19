@@ -8,20 +8,28 @@ import errCode from 'err-code'
 // converts path -> name and content -> stream to fit the web3.storage expectation
 
 /**
+ * @typedef FromPathOptions
+ * @property {boolean} [hidden] - Include .dot files in matched paths
+ * @property {Array<string>} [ignore] - Glob paths to ignore
+ * @property {boolean} [followSymlinks] - follow symlinks
+ * @property {boolean} [preserveMode] - preserve mode
+ * @property {boolean} [preserveMtime] - preserve mtime
+ * @property {number} [mode] - mode to use - if preserveMode is true this will be ignored
+ * @property {import('ipfs-unixfs').MtimeLike} [mtime] - mtime to use - if preserveMtime is true this will be ignored
+ *
+ * @typedef FileObject
+ * @property {string} name
+ * @property {AsyncIterator<Buffer>} stream
+ */
+
+/**
  * Create an async iterator that yields paths that match requested file paths.
  *
  * @param {Iterable<string> | AsyncIterable<string> | string} paths - File system path(s) to glob from
- * @param {Object} [options] - options
- * @param {boolean} [options.hidden] - Include .dot files in matched paths
- * @param {Array<string>} [options.ignore] - Glob paths to ignore
- * @param {boolean} [options.followSymlinks] - follow symlinks
- * @param {boolean} [options.preserveMode] - preserve mode
- * @param {boolean} [options.preserveMtime] - preserve mtime
- * @param {number} [options.mode] - mode to use - if preserveMode is true this will be ignored
- * @param {import('ipfs-unixfs').MtimeLike} [options.mtime] - mtime to use - if preserveMtime is true this will be ignored
- * @yields {Object} File objects in the form `{ name: String, stream: AsyncIterator<Buffer> }`
+ * @param {FromPathOptions} [options] - options
+ * @yields {FileObject}
  */
-export async function * globToFiles (paths, options) {
+export async function * filesFromPath (paths, options) {
   options = options || {}
 
   if (typeof paths === 'string') {

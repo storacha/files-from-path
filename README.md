@@ -1,4 +1,4 @@
-# glob-to-files
+# files-from-path
 
 > Match provided glob paths to file objects with readable stream
 
@@ -6,15 +6,15 @@
 
 ```sh
 # install it as a dependency
-$ npm i glob-to-files
+$ npm i files-from-path
 ```
 
 ## Usage
 
 ```js
-import globToFiles from 'glob-to-files'
+import filesFromPath from 'files-from-path'
 
-for await (const f of globToFiles(`path/to/somewhere`)) {
+for await (const f of filesFromPath(`path/to/somewhere`)) {
   console.log(f)
   // { name: '/path/to/me', stream: [Function: stream] }
 }
@@ -22,7 +22,7 @@ for await (const f of globToFiles(`path/to/somewhere`)) {
 
 ## API
 
-The following parameters can be provided to `globToFfiles`.
+The following parameters can be provided to `filesFromPath`.
 
 | Name | Type | Description |
 |------|------|-------------|
