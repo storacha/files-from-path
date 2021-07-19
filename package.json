@@ -1,6 +1,6 @@
 {
   "name": "files-from-path",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Match provided glob paths to file objects with readable stream",
   "main": "src/index.js",
   "types": "./types/index.d.ts",
@@ -12,7 +12,8 @@
     }
   },
   "files": [
-    "src"
+    "src",
+    "dist"
   ],
   "type": "module",
   "author": "vasco-santos",
