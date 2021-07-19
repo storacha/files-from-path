@@ -23,6 +23,24 @@ import errCode from 'err-code'
  */
 
 /**
+ * Gets all the FileObjects that match requested file paths.
+ *
+ * @param {Iterable<string> | AsyncIterable<string> | string} paths - File system path(s) to glob from
+ * @param {FromPathOptions} [options] - options
+ * @returns {Promise<FileObject[]>}
+ */
+export async function getFilesFromPath (paths, options) {
+  const files = []
+
+  for await (const file of filesFromPath(paths, options)) {
+    files.push(file)
+  }
+
+  // @ts-ignore
+  return files
+}
+
+/**
  * Create an async iterator that yields paths that match requested file paths.
  *
  * @param {Iterable<string> | AsyncIterable<string> | string} paths - File system path(s) to glob from
