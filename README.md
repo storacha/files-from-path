@@ -12,7 +12,7 @@ $ npm i files-from-path
 ## Usage
 
 ```js
-import filesFromPath from 'files-from-path'
+import { filesFromPath } from 'files-from-path'
 
 for await (const f of filesFromPath(`path/to/somewhere`)) {
   console.log(f)
@@ -21,6 +21,8 @@ for await (const f of filesFromPath(`path/to/somewhere`)) {
 ```
 
 ## API
+
+### filesFromPath
 
 The following parameters can be provided to `filesFromPath`.
 
@@ -36,6 +38,10 @@ The following parameters can be provided to `filesFromPath`.
 | [options.preserveMtime] | `boolean` | preserve mtime |
 
 It `yields` file like objects in the form of `{ name: String, stream: AsyncIterator<Buffer> }`
+
+### getFilesFromPath
+
+This takes the same parameters as `filesFromPath`, but returns a `Promise<{ name: String, stream: AsyncIterator<Buffer> }[]>` by creating an array with all the yield file like objects from the path.
 
 ## Releasing
 
