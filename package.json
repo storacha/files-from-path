@@ -8,7 +8,6 @@
   "author": "vasco-santos",
   "license": "(Apache-2.0 AND MIT)",
   "scripts": {
-    "prepare": "npm run build",
     "build": "npm run build:js && npm run build:types",
     "build:js": "ipjs build --main && npm run build:copy",
     "build:copy": "cp -a tsconfig.json src test dist/ ",
@@ -24,6 +23,12 @@
     "ignore": [
       "dist"
     ]
+  },
+  "exports": {
+    ".": {
+      "browser": "./src/index.browser.js",
+      "import": "./src/index.js"
+    }
   },
   "dependencies": {
     "err-code": "^3.0.1",
