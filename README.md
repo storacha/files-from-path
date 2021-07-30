@@ -2,6 +2,12 @@
 
 > Match provided glob paths to file objects with readable stream
 
+[![Build](https://github.com/web3-storage/files-from-path/actions/workflows/main.yml/badge.svg)](https://github.com/web3-storage/files-from-path/actions/workflows/main.yml)
+[![dependencies Status](https://status.david-dm.org/gh/web3-storage/files-from-path.svg)](https://david-dm.org/web3-storage/files-from-path)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![Downloads](https://img.shields.io/npm/dm/files-from-path.svg)](https://www.npmjs.com/package/files-from-path)
+[![Minzipped size](https://badgen.net/bundlephobia/minzip/files-from-path)](https://bundlephobia.com/result?p=files-from-path)
+
 ## Install
 
 ```sh
