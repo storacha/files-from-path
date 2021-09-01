@@ -1,6 +1,6 @@
 {
   "name": "files-from-path",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Match provided glob paths to file objects with readable stream",
   "main": "src/index.js",
   "types": "./types/index.d.ts",
