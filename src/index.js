@@ -1,5 +1,5 @@
 import Path from 'path'
-import fs, { promises as fsp } from 'fs'
+import * as fs from 'fs'
 
 import glob from 'it-glob'
 import errCode from 'err-code'
@@ -74,7 +74,7 @@ export async function * filesFromPath (paths, options) {
     }
 
     const absolutePath = Path.resolve(process.cwd(), path)
-    const stat = await fsp.stat(absolutePath)
+    const stat = await fs.promises.stat(absolutePath)
     const prefix = Path.dirname(absolutePath)
 
     let mode = options.mode
@@ -130,7 +130,7 @@ async function * toGlobSource ({ path, type, prefix, mode, mtime, size, preserve
   })
 
   for await (const p of glob(path, '**/*', globOptions)) {
-    const stat = await fsp.stat(p)
+    const stat = await fs.promises.stat(p)
 
     if (!stat.isFile()) {
       // skip dirs.
