@@ -19,7 +19,7 @@ import errCode from 'err-code'
  *
  * @typedef FileObject
  * @property {string} name
- * @property {AsyncIterator<Buffer>} stream
+ * @property {() => fs.ReadStream} stream
  */
 
 /**
@@ -36,7 +36,6 @@ export async function getFilesFromPath (paths, options) {
     files.push(file)
   }
 
-  // @ts-ignore
   return files
 }
 
