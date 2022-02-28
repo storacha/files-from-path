@@ -16,6 +16,7 @@ import errCode from 'err-code'
  * @property {boolean} [preserveMtime] - preserve mtime
  * @property {number} [mode] - mode to use - if preserveMode is true this will be ignored
  * @property {import('ipfs-unixfs').MtimeLike} [mtime] - mtime to use - if preserveMtime is true this will be ignored
+ * @property {string} [pathPrefix] - base path prefix that will get stripped out of the filenames yielded
  *
  * @typedef FileObject
  * @property {string} name
@@ -74,7 +75,7 @@ export async function * filesFromPath (paths, options) {
 
     const absolutePath = Path.resolve(process.cwd(), path)
     const stat = await fs.promises.stat(absolutePath)
-    const prefix = Path.dirname(absolutePath)
+    const prefix = options.pathPrefix || Path.dirname(absolutePath)
 
     let mode = options.mode
 
