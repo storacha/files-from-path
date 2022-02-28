@@ -42,6 +42,7 @@ The following parameters can be provided to `filesFromPath`.
 | [options.preserveMode] | `boolean` | preserve mode |
 | [options.mode] | `number` | mode to use - if preserveMode is true this will be ignored |
 | [options.preserveMtime] | `boolean` | preserve mtime |
+| [options.pathPrefix] | `string` | base path prefix that will get stripped out of the filenames yielded |
 
 It `yields` file like objects in the form of `{ name: String, stream: AsyncIterator<Buffer> }`
 
