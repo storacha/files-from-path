@@ -25,7 +25,6 @@ test('removes custom prefix', async t => {
   const filesWithoutPrefix = await getFilesFromPath(`${process.cwd()}/test/fixtures`, { pathPrefix })
 
   files.forEach(f => {
-    console.log('n', f.name)
     t.true(f.name.includes('fixtures'))
   })
 
