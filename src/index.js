@@ -1,5 +1,5 @@
 import Path from 'path'
-import * as fs from 'fs'
+import fs from 'graceful-fs'
 
 import glob from 'it-glob'
 import errCode from 'err-code'
