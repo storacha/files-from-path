@@ -43,27 +43,24 @@ test('allows read of more files than ulimit maxfiles', async t => {
     const totalFiles = 512
     dir = await generateTestData(totalFiles)
 
+    const files = await getFilesFromPath(dir)
+    t.is(files.length, totalFiles)
+
     // Restrict to 256 open files max
     // Note: this doesn't work on MacOS Monterey, you need to run:
     // sudo sysctl kern.maxfilesperproc=256
     unlimited(totalFiles / 2)
 
-    let totalReadFiles = 0
-    const readPromises = []
-    for await (const f of filesFromPath(dir)) {
-      readPromises.push((async () => {
-        totalReadFiles++
-        let i = 0
-        for await (const _ of f.stream()) { // eslint-disable-line no-unused-vars
-          if (i === 0) { // make slow so we open all the files
-            await new Promise(resolve => setTimeout(resolve, 5000))
-          }
-          i++
+    // Make sure we can read ALL of these files at the same time.
+    t.notThrowsAsync(() => Promise.all(files.map(async f => {
+      let i = 0
+      for await (const _ of f.stream()) { // eslint-disable-line no-unused-vars
+        if (i === 0) { // make slow so we open all the files
+          await new Promise(resolve => setTimeout(resolve, 5000))
         }
-      })())
-    }
-    await Promise.all(readPromises)
-    t.is(totalReadFiles, totalFiles)
+        i++
+      }
+    })))
   } finally {
     if (dir) {
       await fs.promises.rm(dir, { recursive: true, force: true })
