@@ -38,18 +38,17 @@ test('removes custom prefix', async t => {
 })
 
 test('allows read of more files than ulimit maxfiles', async t => {
+  /** @type {string} */
   let dir
   try {
-    const totalFiles = 512
+    const totalFiles = 256
     dir = await generateTestData(totalFiles)
 
     const files = await getFilesFromPath(dir)
     t.is(files.length, totalFiles)
 
-    // Restrict to 256 open files max
-    // Note: this doesn't work on MacOS Monterey, you need to run:
-    // sudo sysctl kern.maxfilesperproc=256
-    unlimited(totalFiles / 2)
+    // Restrict open files to less than the total files we'll read.
+    unlimited(totalFiles - 1)
 
     // Make sure we can read ALL of these files at the same time.
     t.notThrowsAsync(() => Promise.all(files.map(async f => {
