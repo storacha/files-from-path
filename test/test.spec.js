@@ -2,9 +2,10 @@ import test from 'ava'
 import Path from 'path'
 import process from 'process'
 import os from 'os'
-import fs from 'fs'
+import fs from 'graceful-fs'
 import crypto from 'crypto'
 import unlimited from 'unlimited'
+import { promisify } from 'util'
 import { filesFromPath, getFilesFromPath } from '../src/index.js'
 
 test('yields files from fixtures folder', async t => {
@@ -44,6 +45,9 @@ test('allows read of more files than ulimit maxfiles', async t => {
     const totalFiles = 256
     dir = await generateTestData(totalFiles)
 
+    // Restrict open files to less than the total files we'll read.
+    unlimited(totalFiles - 1)
+
     const files = await getFilesFromPath(dir)
     t.is(files.length, totalFiles)
 
@@ -51,7 +55,7 @@ test('allows read of more files than ulimit maxfiles', async t => {
     unlimited(totalFiles - 1)
 
     // Make sure we can read ALL of these files at the same time.
-    t.notThrowsAsync(() => Promise.all(files.map(async f => {
+    await t.notThrowsAsync(() => Promise.all(files.map(async f => {
       let i = 0
       for await (const _ of f.stream()) { // eslint-disable-line no-unused-vars
         if (i === 0) { // make slow so we open all the files
@@ -62,19 +66,19 @@ test('allows read of more files than ulimit maxfiles', async t => {
     })))
   } finally {
     if (dir) {
-      await fs.promises.rm(dir, { recursive: true, force: true })
+      await promisify(fs.rm)(dir, { recursive: true, force: true })
     }
   }
 })
 
 async function generateTestData (n) {
   const dirName = Path.join(os.tmpdir(), `files-from-path-test-${Date.now()}`)
-  await fs.promises.mkdir(dirName)
+  await promisify(fs.mkdir)(dirName)
   const minBytes = 1024
   const maxBytes = 1024 * 1024 * 5
   for (let i = 0; i < n; i++) {
     const numBytes = Math.floor(Math.random() * (maxBytes - minBytes) + minBytes)
-    await fs.promises.writeFile(Path.join(dirName, `${i}.json`), crypto.randomBytes(numBytes))
+    await promisify(fs.writeFile)(Path.join(dirName, `${i}.json`), crypto.randomBytes(numBytes))
   }
   return dirName
 }
