@@ -1,8 +1,11 @@
 import Path from 'path'
-import * as fs from 'fs'
-
+import fs from 'graceful-fs'
+import { promisify } from 'util'
 import glob from 'it-glob'
 import errCode from 'err-code'
+
+// https://github.com/isaacs/node-graceful-fs/issues/160
+const fsStat = promisify(fs.stat)
 
 // ported to esm from https://github.com/ipfs/js-ipfs-utils/blob/d7e7bde061ef928d72f34c17d4d6310a7215bd73/src/files/glob-source.js
 // converts path -> name and content -> stream to fit the web3.storage expectation
@@ -74,7 +77,7 @@ export async function * filesFromPath (paths, options) {
     }
 
     const absolutePath = Path.resolve(process.cwd(), path)
-    const stat = await fs.promises.stat(absolutePath)
+    const stat = await fsStat(absolutePath)
     const prefix = options.pathPrefix || Path.dirname(absolutePath)
 
     let mode = options.mode
@@ -130,7 +133,7 @@ async function * toGlobSource ({ path, type, prefix, mode, mtime, size, preserve
   })
 
   for await (const p of glob(path, '**/*', globOptions)) {
-    const stat = await fs.promises.stat(p)
+    const stat = await fsStat(p)
 
     if (!stat.isFile()) {
       // skip dirs.
