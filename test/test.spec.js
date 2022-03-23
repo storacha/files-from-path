@@ -8,6 +8,11 @@ import unlimited from 'unlimited'
 import { promisify } from 'util'
 import { filesFromPath, getFilesFromPath } from '../src/index.js'
 
+// https://github.com/isaacs/node-graceful-fs/issues/160
+const fsMkdir = promisify(fs.mkdir)
+const fsWriteFile = promisify(fs.writeFile)
+const fsRm = promisify(fs.rm)
+
 test('yields files from fixtures folder', async t => {
   const files = []
   for await (const f of filesFromPath(`${process.cwd()}/test/fixtures`)) {
@@ -39,15 +44,10 @@ test('removes custom prefix', async t => {
 })
 
 test('allows read of more files than ulimit maxfiles', async t => {
-  /** @type {string} */
-  let dir
+  const totalFiles = 256
+  const dir = await generateTestData(totalFiles)
+
   try {
-    const totalFiles = 256
-    dir = await generateTestData(totalFiles)
-
-    // Restrict open files to less than the total files we'll read.
-    unlimited(totalFiles - 1)
-
     const files = await getFilesFromPath(dir)
     t.is(files.length, totalFiles)
 
@@ -56,29 +56,21 @@ test('allows read of more files than ulimit maxfiles', async t => {
 
     // Make sure we can read ALL of these files at the same time.
     await t.notThrowsAsync(() => Promise.all(files.map(async f => {
-      let i = 0
       for await (const _ of f.stream()) { // eslint-disable-line no-unused-vars
-        if (i === 0) { // make slow so we open all the files
-          await new Promise(resolve => setTimeout(resolve, 5000))
-        }
-        i++
+        // make slow so we open all the files
+        await new Promise(resolve => setTimeout(resolve, 5000))
       }
     })))
   } finally {
-    if (dir) {
-      await promisify(fs.rm)(dir, { recursive: true, force: true })
-    }
+    await fsRm(dir, { recursive: true, force: true })
   }
 })
 
 async function generateTestData (n) {
   const dirName = Path.join(os.tmpdir(), `files-from-path-test-${Date.now()}`)
-  await promisify(fs.mkdir)(dirName)
-  const minBytes = 1024
-  const maxBytes = 1024 * 1024 * 5
+  await fsMkdir(dirName)
   for (let i = 0; i < n; i++) {
-    const numBytes = Math.floor(Math.random() * (maxBytes - minBytes) + minBytes)
-    await promisify(fs.writeFile)(Path.join(dirName, `${i}.json`), crypto.randomBytes(numBytes))
+    await fsWriteFile(Path.join(dirName, `${i}.json`), '{}')
   }
   return dirName
 }
