@@ -30,6 +30,9 @@
       "import": "./src/index.js"
     }
   },
+  "dependencies": {
+    "graceful-fs": "^4.2.10"
+  },
   "devDependencies": {
     "@types/node": "^18.15.1",
     "ava": "^4.1.0",

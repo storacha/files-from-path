@@ -1,8 +1,13 @@
 import fs from 'fs'
+import { promisify } from 'util'
 import path from 'path'
 import { Readable } from 'stream'
 
 /** @typedef {Pick<File, 'stream'|'name'|'size'>} FileLike */
+
+// https://github.com/isaacs/node-graceful-fs/issues/160
+const fsStat = promisify(fs.stat)
+const fsReaddir = promisify(fs.readdir)
 
 /**
  * @param {Iterable<string>} paths
@@ -51,7 +56,7 @@ async function * filesFromPath (filepath, options = {}) {
   }
 
   const name = filepath
-  const stat = await fs.promises.stat(name)
+  const stat = await fsStat(name)
 
   if (!filter(name)) {
     return
@@ -71,7 +76,7 @@ async function * filesFromPath (filepath, options = {}) {
  * @returns {AsyncIterableIterator<FileLike>}
  */
 async function * filesFromDir (dir, filter) {
-  const entries = await fs.promises.readdir(path.join(dir), { withFileTypes: true })
+  const entries = await fsReaddir(path.join(dir), { withFileTypes: true })
   for (const entry of entries) {
     if (!filter(entry.name)) {
       continue
@@ -79,7 +84,7 @@ async function * filesFromDir (dir, filter) {
 
     if (entry.isFile()) {
       const name = path.join(dir, entry.name)
-      const { size } = await fs.promises.stat(name)
+      const { size } = await fsStat(name)
       // @ts-expect-error node web stream not type compatible with web stream
       yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size }
     } else if (entry.isDirectory()) {
