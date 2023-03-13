@@ -5,7 +5,7 @@ import { Readable } from 'stream'
 /** @typedef {Pick<File, 'stream'|'name'|'size'>} FileLike */
 
 /**
- * @param {string[]} paths
+ * @param {Iterable<string>} paths
  * @param {object} [options]
  * @param {boolean} [options.hidden]
  * @returns {Promise<FileLike[]>}

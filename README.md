@@ -44,7 +44,7 @@ The following parameters can be provided to `filesFromPaths`:
 
 | Name | Type | Description |
 |------|------|-------------|
-| paths | `Iterable<string> | string` | File system path(s) to read from |
+| paths | `Iterable<string>` | File system path(s) to read from |
 | [options] | `object` | options |
 | [options.hidden] | `boolean` | Include .dot files in matched paths (default: `false`) |
 
