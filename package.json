@@ -34,6 +34,7 @@
     "graceful-fs": "^4.2.10"
   },
   "devDependencies": {
+    "@types/graceful-fs": "^4.1.6",
     "@types/node": "^18.15.1",
     "ava": "^4.1.0",
     "ipjs": "^5.0.3",

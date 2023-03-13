@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'graceful-fs'
 import { promisify } from 'util'
 import path from 'path'
 import { Readable } from 'stream'
