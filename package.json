@@ -1,7 +1,7 @@
 {
   "name": "files-from-path",
   "version": "0.2.6",
-  "description": "Match provided glob paths to file objects with readable stream",
+  "description": "Expand paths to file-like objects with name, readable stream and size.",
   "main": "src/index.js",
   "types": "./types/index.d.ts",
   "type": "module",
@@ -30,15 +30,8 @@
       "import": "./src/index.js"
     }
   },
-  "dependencies": {
-    "err-code": "^3.0.1",
-    "graceful-fs": "^4.2.9",
-    "ipfs-unixfs": "^6.0.5",
-    "it-glob": "^0.0.13"
-  },
   "devDependencies": {
-    "@types/graceful-fs": "^4.1.5",
-    "@types/node": "^16.3.2",
+    "@types/node": "^18.15.1",
     "ava": "^4.1.0",
     "ipjs": "^5.0.3",
     "standard": "^16.0.3",

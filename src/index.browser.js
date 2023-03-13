@@ -1,7 +1,3 @@
-export async function getFilesFromPath () {
-  throw new Error('Unsupported in this environment')
-}
-
-export async function * filesFromPath () {
+export async function filesFromPaths () {
   throw new Error('Unsupported in this environment')
 }

@@ -5,41 +5,42 @@ import os from 'os'
 import fs from 'graceful-fs'
 import unlimited from 'unlimited'
 import { promisify } from 'util'
-import { filesFromPath, getFilesFromPath } from '../src/index.js'
+import { filesFromPaths } from '../src/index.js'
 
 // https://github.com/isaacs/node-graceful-fs/issues/160
 const fsMkdir = promisify(fs.mkdir)
 const fsWriteFile = promisify(fs.writeFile)
 const fsRm = promisify(fs.rm)
 
-test('yields files from fixtures folder', async t => {
-  const files = []
-  for await (const f of filesFromPath(`${process.cwd()}/test/fixtures`)) {
-    files.push(f)
-  }
+test('gets files from node_modules', async (t) => {
+  const files = await filesFromPaths(['node_modules'])
+  t.log(`${files.length} files in node_modules`)
+  t.true(files.length > 1)
+})
 
-  t.true(files.length === 2)
+test('includes file size', async (t) => {
+  const files = await filesFromPaths(['test/fixtures/empty.car'])
+  t.is(files.length, 1)
+  t.is(files[0].size, 18)
+})
+
+test('removes common path prefix', async (t) => {
+  const files = await filesFromPaths(['test/fixtures/dir/file2.txt', './test/fixtures/empty.car'])
+  t.true(files.length > 1)
+  for (const file of files) {
+    t.false(file.name.startsWith('test/fixtures/'))
+  }
+})
+
+test('single file has name', async (t) => {
+  const files = await filesFromPaths(['test/fixtures/empty.car'])
+  t.is(files.length, 1)
+  t.is(files[0].name, 'empty.car')
 })
 
 test('gets files from fixtures folder', async t => {
-  const files = await getFilesFromPath(`${process.cwd()}/test/fixtures`)
-
-  t.true(files.length === 2)
-})
-
-test('removes custom prefix', async t => {
-  const files = await getFilesFromPath(`${process.cwd()}/test/fixtures`)
-
-  const pathPrefix = Path.join(process.cwd(), 'test', 'fixtures')
-  const filesWithoutPrefix = await getFilesFromPath(`${process.cwd()}/test/fixtures`, { pathPrefix })
-
-  files.forEach(f => {
-    t.true(f.name.includes('fixtures'))
-  })
-
-  filesWithoutPrefix.forEach(f => {
-    t.false(f.name.includes('fixtures'))
-  })
+  const files = await filesFromPaths([`${process.cwd()}/test/fixtures`])
+  t.true(files.length === 3)
 })
 
 test('allows read of more files than ulimit maxfiles', async t => {
@@ -47,7 +48,7 @@ test('allows read of more files than ulimit maxfiles', async t => {
   const dir = await generateTestData(totalFiles)
 
   try {
-    const files = await getFilesFromPath(dir)
+    const files = await filesFromPaths([dir])
     t.is(files.length, totalFiles)
 
     // Restrict open files to less than the total files we'll read.
@@ -55,16 +56,21 @@ test('allows read of more files than ulimit maxfiles', async t => {
 
     // Make sure we can read ALL of these files at the same time.
     await t.notThrowsAsync(() => Promise.all(files.map(async f => {
-      for await (const _ of f.stream()) { // eslint-disable-line no-unused-vars
-        // make slow so we open all the files
-        await new Promise(resolve => setTimeout(resolve, 5000))
-      }
+      await f.stream().pipeTo(new WritableStream({
+        async write () {
+          // make slow so we open all the files
+          await new Promise(resolve => setTimeout(resolve, 5000))
+        }
+      }))
     })))
   } finally {
     await fsRm(dir, { recursive: true, force: true })
   }
 })
 
+/**
+ * @param {number} n
+ */
 async function generateTestData (n) {
   const dirName = Path.join(os.tmpdir(), `files-from-path-test-${Date.now()}`)
   await fsMkdir(dirName)

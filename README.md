@@ -1,6 +1,6 @@
 # files-from-path
 
-> Match provided glob paths to file objects with readable stream
+> Expand paths to file-like objects with name, readable stream and size.
 
 [![Build](https://github.com/web3-storage/files-from-path/actions/workflows/main.yml/badge.svg)](https://github.com/web3-storage/files-from-path/actions/workflows/main.yml)
 [![dependencies Status](https://status.david-dm.org/gh/web3-storage/files-from-path.svg)](https://david-dm.org/web3-storage/files-from-path)
@@ -11,44 +11,44 @@
 ## Install
 
 ```sh
-# install it as a dependency
-$ npm i files-from-path
+npm install files-from-path
 ```
 
 ## Usage
 
 ```js
-import { filesFromPath } from 'files-from-path'
+import { filesFromPaths } from 'files-from-path'
 
-for await (const f of filesFromPath(`path/to/somewhere`)) {
-  console.log(f)
-  // { name: '/path/to/me', stream: [Function: stream] }
-}
+// Given a file system like:
+// path/to/file.txt
+// path/to/dir/a.pdf
+// path/to/dir/images/cat.gif
+
+const files = await filesFromPaths(['path/to/file.txt', 'path/to/dir'])
+console.log(files)
+
+// Output:
+// [
+//   { name: 'file.txt', stream: [Function: stream] },
+//   { name: 'dir/b.pdf', stream: [Function: stream] },
+//   { name: 'dir/images/cat.gif', stream: [Function: stream] },
+// ]
+// Note: common sub-path ("path/to/") is removed.
 ```
 
 ## API
 
-### filesFromPath
+### filesFromPaths
 
-The following parameters can be provided to `filesFromPath`.
+The following parameters can be provided to `filesFromPaths`:
 
 | Name | Type | Description |
 |------|------|-------------|
-| paths | `Iterable<string> | AsyncIterable<string> | string` | File system path(s) to glob from |
+| paths | `Iterable<string> | string` | File system path(s) to read from |
 | [options] | `object` | options |
-| [options.hidden] | `boolean` | Include .dot files in matched paths |
-| [options.ignore] | `string[]` | Glob paths to ignore |
-| [options.followSymlinks] | `boolean` | follow symlinks |
-| [options.preserveMode] | `boolean` | preserve mode |
-| [options.mode] | `number` | mode to use - if preserveMode is true this will be ignored |
-| [options.preserveMtime] | `boolean` | preserve mtime |
-| [options.pathPrefix] | `string` | base path prefix that will get stripped out of the filenames yielded |
+| [options.hidden] | `boolean` | Include .dot files in matched paths (default: `false`) |
 
-It `yields` file like objects in the form of `{ name: String, stream: AsyncIterator<Buffer> }`
-
-### getFilesFromPath
-
-This takes the same parameters as `filesFromPath`, but returns a `Promise<{ name: String, stream: AsyncIterator<Buffer> }[]>` by creating an array with all the yield file like objects from the path.
+It returns an array of file-like objects in the form of `{ name: String, stream: () => ReadableStream<Uint8Array> }`
 
 ## Releasing
 
