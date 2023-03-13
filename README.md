@@ -46,7 +46,15 @@ The following parameters can be provided to `filesFromPaths`:
 | [options] | `object` | options |
 | [options.hidden] | `boolean` | Include .dot files in matched paths (default: `false`) |
 
-It returns an array of file-like objects in the form of `{ name: String, stream: () => ReadableStream<Uint8Array> }`
+It returns an _array_ of file-like objects in the form:
+
+```ts
+{
+  name: String
+  stream (): ReadableStream<Uint8Array>
+  size: number
+}
+```
 
 ## Releasing
 
