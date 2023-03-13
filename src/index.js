@@ -51,17 +51,17 @@ async function * filesFromPath (filepath, options = {}) {
   }
 
   const name = filepath
-  const stat = await fs.promises.stat(filepath)
+  const stat = await fs.promises.stat(name)
 
   if (!filter(name)) {
     return
   }
 
   if (stat.isFile()) {
-    const stream = /** @type {File['stream']} */ (() => Readable.toWeb(fs.createReadStream(filepath)))
-    yield { name, stream, size: stat.size }
+    // @ts-expect-error node web stream not type compatible with web stream
+    yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size: stat.size }
   } else if (stat.isDirectory()) {
-    yield * filesFromDir(filepath, filter)
+    yield * filesFromDir(name, filter)
   }
 }
 
@@ -80,8 +80,8 @@ async function * filesFromDir (dir, filter) {
     if (entry.isFile()) {
       const name = path.join(dir, entry.name)
       const { size } = await fs.promises.stat(name)
-      const stream = /** @type {File['stream']} */ (() => Readable.toWeb(fs.createReadStream(name)))
-      yield { name, stream, size }
+      // @ts-expect-error node web stream not type compatible with web stream
+      yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size }
     } else if (entry.isDirectory()) {
       yield * filesFromDir(path.join(dir, entry.name), filter)
     }

@@ -1,16 +1,11 @@
+/* global WritableStream */
 import test from 'ava'
 import Path from 'path'
 import process from 'process'
 import os from 'os'
-import fs from 'graceful-fs'
+import fs from 'fs'
 import unlimited from 'unlimited'
-import { promisify } from 'util'
 import { filesFromPaths } from '../src/index.js'
-
-// https://github.com/isaacs/node-graceful-fs/issues/160
-const fsMkdir = promisify(fs.mkdir)
-const fsWriteFile = promisify(fs.writeFile)
-const fsRm = promisify(fs.rm)
 
 test('gets files from node_modules', async (t) => {
   const files = await filesFromPaths(['node_modules'])
@@ -64,7 +59,7 @@ test('allows read of more files than ulimit maxfiles', async t => {
       }))
     })))
   } finally {
-    await fsRm(dir, { recursive: true, force: true })
+    await fs.promises.rm(dir, { recursive: true, force: true })
   }
 })
 
@@ -73,9 +68,9 @@ test('allows read of more files than ulimit maxfiles', async t => {
  */
 async function generateTestData (n) {
   const dirName = Path.join(os.tmpdir(), `files-from-path-test-${Date.now()}`)
-  await fsMkdir(dirName)
+  await fs.promises.mkdir(dirName)
   for (let i = 0; i < n; i++) {
-    await fsWriteFile(Path.join(dirName, `${i}.json`), '{}')
+    await fs.promises.writeFile(Path.join(dirName, `${i}.json`), '{}')
   }
   return dirName
 }
