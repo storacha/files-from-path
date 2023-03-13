@@ -1,166 +1,94 @@
-import Path from 'path'
 import fs from 'graceful-fs'
 import { promisify } from 'util'
-import glob from 'it-glob'
-import errCode from 'err-code'
+import path from 'path'
+import { Readable } from 'stream'
+
+/** @typedef {Pick<File, 'stream'|'name'|'size'>} FileLike */
 
 // https://github.com/isaacs/node-graceful-fs/issues/160
 const fsStat = promisify(fs.stat)
-
-// ported to esm from https://github.com/ipfs/js-ipfs-utils/blob/d7e7bde061ef928d72f34c17d4d6310a7215bd73/src/files/glob-source.js
-// converts path -> name and content -> stream to fit the web3.storage expectation
+const fsReaddir = promisify(fs.readdir)
 
 /**
- * @typedef FromPathOptions
- * @property {boolean} [hidden] - Include .dot files in matched paths
- * @property {Array<string>} [ignore] - Glob paths to ignore
- * @property {boolean} [followSymlinks] - follow symlinks
- * @property {boolean} [preserveMode] - preserve mode
- * @property {boolean} [preserveMtime] - preserve mtime
- * @property {number} [mode] - mode to use - if preserveMode is true this will be ignored
- * @property {import('ipfs-unixfs').MtimeLike} [mtime] - mtime to use - if preserveMtime is true this will be ignored
- * @property {string} [pathPrefix] - base path prefix that will get stripped out of the filenames yielded
- *
- * @typedef FileObject
- * @property {string} name
- * @property {() => fs.ReadStream} stream
+ * @param {Iterable<string>} paths
+ * @param {object} [options]
+ * @param {boolean} [options.hidden]
+ * @returns {Promise<FileLike[]>}
  */
-
-/**
- * Gets all the FileObjects that match requested file paths.
- *
- * @param {Iterable<string> | AsyncIterable<string> | string} paths - File system path(s) to glob from
- * @param {FromPathOptions} [options] - options
- * @returns {Promise<FileObject[]>}
- */
-export async function getFilesFromPath (paths, options) {
+export async function filesFromPaths (paths, options) {
+  /** @type {string[]|undefined} */
+  let commonParts
   const files = []
-
-  for await (const file of filesFromPath(paths, options)) {
-    files.push(file)
+  for (const p of paths) {
+    for await (const file of filesFromPath(p, options)) {
+      files.push(file)
+      const nameParts = file.name.split(path.sep)
+      if (commonParts == null) {
+        commonParts = nameParts.slice(0, -1)
+        continue
+      }
+      for (let i = 0; i < commonParts.length; i++) {
+        if (commonParts[i] !== nameParts[i]) {
+          commonParts = commonParts.slice(0, i)
+          break
+        }
+      }
+    }
   }
-
-  return files
+  const commonPath = `${(commonParts ?? []).join('/')}/`
+  return files.map(f => ({ ...f, name: f.name.slice(commonPath.length) }))
 }
 
 /**
- * Create an async iterator that yields paths that match requested file paths.
- *
- * @param {Iterable<string> | AsyncIterable<string> | string} paths - File system path(s) to glob from
- * @param {FromPathOptions} [options] - options
- * @yields {FileObject}
+ * @param {string} filepath
+ * @param {object} [options]
+ * @param {boolean} [options.hidden]
+ * @returns {AsyncIterableIterator<FileLike>}
  */
-export async function * filesFromPath (paths, options) {
-  options = options || {}
+async function * filesFromPath (filepath, options = {}) {
+  filepath = path.resolve(filepath)
+  const hidden = options.hidden ?? false
 
-  if (typeof paths === 'string') {
-    paths = [paths]
+  /** @param {string} filepath */
+  const filter = filepath => {
+    if (!hidden && path.basename(filepath).startsWith('.')) return false
+    return true
   }
 
-  const globSourceOptions = {
-    recursive: true,
-    glob: {
-      dot: Boolean(options.hidden),
-      ignore: Array.isArray(options.ignore) ? options.ignore : [],
-      follow: options.followSymlinks != null ? options.followSymlinks : true
-    }
-  }
+  const name = filepath
+  const stat = await fsStat(name)
 
-  // Check the input paths comply with options.recursive and convert to glob sources
-  for await (const path of paths) {
-    if (typeof path !== 'string') {
-      throw errCode(
-        new Error('Path must be a string'),
-        'ERR_INVALID_PATH',
-        { path }
-      )
-    }
-
-    const absolutePath = Path.resolve(process.cwd(), path)
-    const stat = await fsStat(absolutePath)
-    const prefix = options.pathPrefix || Path.dirname(absolutePath)
-
-    let mode = options.mode
-
-    if (options.preserveMode) {
-      // @ts-ignore
-      mode = stat.mode
-    }
-
-    let mtime = options.mtime
-
-    if (options.preserveMtime) {
-      // @ts-ignore
-      mtime = stat.mtime
-    }
-
-    yield * toGlobSource({
-      path,
-      type: stat.isDirectory() ? 'dir' : 'file',
-      prefix,
-      mode,
-      mtime,
-      size: stat.size,
-      preserveMode: options.preserveMode,
-      preserveMtime: options.preserveMtime
-    }, globSourceOptions)
-  }
-}
-
-// @ts-ignore
-async function * toGlobSource ({ path, type, prefix, mode, mtime, size, preserveMode, preserveMtime }, options) {
-  options = options || {}
-
-  const baseName = Path.basename(path)
-
-  if (type === 'file') {
-    yield {
-      name: `/${baseName.replace(prefix, '')}`,
-      stream: () => fs.createReadStream(Path.isAbsolute(path) ? path : Path.join(process.cwd(), path)),
-      mode,
-      mtime,
-      size
-    }
-
+  if (!filter(name)) {
     return
   }
 
-  const globOptions = Object.assign({}, options.glob, {
-    cwd: path,
-    nodir: false,
-    realpath: false,
-    absolute: true
-  })
-
-  for await (const p of glob(path, '**/*', globOptions)) {
-    const stat = await fsStat(p)
-
-    if (!stat.isFile()) {
-      // skip dirs.
-      continue
-    }
-
-    if (preserveMode || preserveMtime) {
-      if (preserveMode) {
-        mode = stat.mode
-      }
-
-      if (preserveMtime) {
-        mtime = stat.mtime
-      }
-    }
-
-    yield {
-      name: toPosix(p.replace(prefix, '')),
-      stream: () => fs.createReadStream(p),
-      mode,
-      mtime,
-      size: stat.size
-    }
+  if (stat.isFile()) {
+    // @ts-expect-error node web stream not type compatible with web stream
+    yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size: stat.size }
+  } else if (stat.isDirectory()) {
+    yield * filesFromDir(name, filter)
   }
 }
 
 /**
- * @param {string} path
+ * @param {string} dir
+ * @param {(name: string) => boolean} filter
+ * @returns {AsyncIterableIterator<FileLike>}
  */
-const toPosix = path => path.replace(/\\/g, '/')
+async function * filesFromDir (dir, filter) {
+  const entries = await fsReaddir(path.join(dir), { withFileTypes: true })
+  for (const entry of entries) {
+    if (!filter(entry.name)) {
+      continue
+    }
+
+    if (entry.isFile()) {
+      const name = path.join(dir, entry.name)
+      const { size } = await fsStat(name)
+      // @ts-expect-error node web stream not type compatible with web stream
+      yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size }
+    } else if (entry.isDirectory()) {
+      yield * filesFromDir(path.join(dir, entry.name), filter)
+    }
+  }
+}
