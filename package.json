@@ -6,7 +6,7 @@
   "types": "./types/index.d.ts",
   "type": "module",
   "author": "vasco-santos",
-  "license": "(Apache-2.0 AND MIT)",
+  "license": "Apache-2.0 OR MIT",
   "scripts": {
     "build": "npm run build:js && npm run build:types",
     "build:js": "ipjs build --main && npm run build:copy",

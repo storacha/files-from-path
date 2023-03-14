@@ -59,3 +59,11 @@ It returns an _array_ of file-like objects in the form:
 ## Releasing
 
 You can publish by either running npm publish in the dist directory or using npx ipjs publish.
+
+## Contributing
+
+Feel free to join in. All welcome. Please [open an issue](https://github.com/web3-storage/files-from-path/issues)!
+
+## License
+
+Dual-licensed under [Apache 2.0 OR MIT](https://github.com/web3-storage/files-from-path/blob/main/LICENSE.md)
