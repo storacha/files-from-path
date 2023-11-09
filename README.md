@@ -45,13 +45,14 @@ The following parameters can be provided to `filesFromPaths`:
 | paths | `Iterable<string>` | File system path(s) to read from |
 | [options] | `object` | options |
 | [options.hidden] | `boolean` | Include .dot files in matched paths (default: `false`) |
+| [options.sort] | `boolean` | Sort files by path (default: `true`) |
 
 It returns an _array_ of file-like objects in the form:
 
 ```ts
 {
-  name: String
-  stream (): ReadableStream<Uint8Array>
+  name: string
+  stream: () => ReadableStream<Uint8Array>
   size: number
 }
 ```
