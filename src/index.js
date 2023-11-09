@@ -96,7 +96,7 @@ async function * filesFromPath (filepath, options) {
 
   if (stat.isFile()) {
     // @ts-expect-error node web stream not type compatible with web stream
-    yield { name, stream: () => Readable.toWeb(defaultfs.createReadStream(name)), size: stat.size }
+    yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size: stat.size }
   } else if (stat.isDirectory()) {
     yield * filesFromDir(name, filter, options)
   }
