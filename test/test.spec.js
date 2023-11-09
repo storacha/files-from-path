@@ -63,6 +63,28 @@ test('allows read of more files than ulimit maxfiles', async t => {
   }
 })
 
+test('uses custom fs implementation', async t => {
+  // it uses graceful-fs by default so passing node:fs is legit test
+  const files = await filesFromPaths([`${process.cwd()}/test/fixtures`], { fs })
+  t.true(files.length === 3)
+})
+
+test('sorts by path', async t => {
+  const paths = ['dir/file2.txt', 'empty.car', 'file.txt']
+  /** @param {string} name */
+  const toDirEnt = name => ({ name, isFile: () => true, isDirectory: () => false })
+  const files = await filesFromPaths([`${process.cwd()}/test/fixtures`], {
+    fs: {
+      createReadStream: fs.createReadStream,
+      promises: {
+        stat: fs.promises.stat,
+        readdir: async () => [...paths].reverse().map(toDirEnt)
+      }
+    }
+  })
+  t.deepEqual(files.map(f => f.name), paths)
+})
+
 /**
  * @param {number} n
  */
