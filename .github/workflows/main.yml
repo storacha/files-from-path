@@ -17,11 +17,9 @@ jobs:
           node-version: 18
           cache: 'npm'
       - run: npm ci
-      - run: npm run build
       - run: npm run lint
 
   test:
-    needs: check
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -38,10 +36,14 @@ jobs:
 
   release:
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main')
-    needs: test
+    needs: 
+      - test
+      - check
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: google-github-actions/release-please-action@v3
