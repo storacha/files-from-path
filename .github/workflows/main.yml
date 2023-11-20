@@ -11,14 +11,15 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: ${{matrix.node}}
-      - run: npm install
-      - run: npm run  build
-      - name: Lint
-        run: npm run lint
+          node-version: 18
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - run: npm run lint
+
   test:
     needs: check
     runs-on: ${{ matrix.os }}
@@ -26,12 +27,39 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        node: [18, 19]
+        node: [18, 20]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{matrix.node}}
-      - run: npm install
-      - name: Unit tests
-        run: npm run test
+      - run: npm ci
+      - run: npm run test
+
+  release:
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: node
+          package-name: files-from-path
+          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"chore","section":"Other Changes","hidden":false}]'
+      - uses: actions/setup-node@v4
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          node-version: 18
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+        if: ${{ steps.release.outputs.release_created }}
+      - run: npm publish --provenance
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
