@@ -59,7 +59,7 @@ It returns an _array_ of file-like objects in the form:
 
 ## Releasing
 
-You can publish by either running npm publish in the dist directory or using npx ipjs publish.
+Releasing to npm is done via [`release-please`](https://github.com/googleapis/release-please). A Release PR will be opened with a CHANGELOG update in after a PR is merged to main. Merging the release PR will publish the new version to npm.
 
 ## Contributing
 
