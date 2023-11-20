@@ -7,10 +7,14 @@ import fs from 'fs'
 import unlimited from 'unlimited'
 import { filesFromPaths } from '../src/index.js'
 
-test('gets files from node_modules', async (t) => {
-  const files = await filesFromPaths(['node_modules'])
-  t.log(`${files.length} files in node_modules`)
-  t.true(files.length > 1)
+test('gets files from path string ', async (t) => {
+  const files = await filesFromPaths('test/fixtures/dir')
+  t.is(files.length, 1)
+})
+
+test('gets files from path array', async (t) => {
+  const files = await filesFromPaths(['test/fixtures/dir'])
+  t.is(files.length, 1)
 })
 
 test('includes file size', async (t) => {

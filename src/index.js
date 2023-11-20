@@ -35,7 +35,7 @@ const defaultfs = {
 }
 
 /**
- * @param {Iterable<string>} paths
+ * @param {string | Iterable<string>} paths
  * @param {object} [options]
  * @param {boolean} [options.hidden]
  * @param {boolean} [options.sort] Sort by path. Default: true.
@@ -43,6 +43,9 @@ const defaultfs = {
  * @returns {Promise<FileLike[]>}
  */
 export async function filesFromPaths (paths, options) {
+  if (typeof paths === 'string') {
+    paths = [paths]
+  }
   /** @type {string[]|undefined} */
   let commonParts
   const files = []
