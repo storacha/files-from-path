@@ -60,7 +60,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
         if: ${{ steps.release.outputs.release_created }}
-      - run: npm publish --provenance
+      - run: cd dist && npm publish --provenance
         if: ${{ steps.release.outputs.release_created }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
