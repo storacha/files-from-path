@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/web3-storage/files-from-path/compare/v1.0.2...v1.0.3) (2023-11-29)
+
+
+### Bug Fixes
+
+* publish from dist ([#33](https://github.com/web3-storage/files-from-path/issues/33)) ([fea9816](https://github.com/web3-storage/files-from-path/commit/fea981658901412865df00971e9cd3d68904eb88))
+
 ## [1.0.2](https://github.com/web3-storage/files-from-path/compare/v1.0.1...v1.0.2) (2023-11-20)
 
 
