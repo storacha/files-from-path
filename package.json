@@ -8,7 +8,6 @@
   "author": "vasco-santos",
   "license": "Apache-2.0 OR MIT",
   "scripts": {
-    "prepare": "npm run build",
     "build": "npm run build:js && npm run build:types",
     "build:js": "ipjs build --main && npm run build:copy",
     "build:copy": "cp -a tsconfig.json src test dist/ ",
