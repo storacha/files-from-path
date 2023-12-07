@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/web3-storage/files-from-path/compare/v1.0.3...v1.0.4) (2023-12-07)
+
+
+### Bug Fixes
+
+* build step cannot be run in dist dir ([198359f](https://github.com/web3-storage/files-from-path/commit/198359f2b66cfecfe30997560456972fa422fd81))
+
 ## [1.0.3](https://github.com/web3-storage/files-from-path/compare/v1.0.2...v1.0.3) (2023-11-29)
 
 
