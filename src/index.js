@@ -101,7 +101,16 @@ async function * filesFromPath (filepath, options) {
     // @ts-expect-error node web stream not type compatible with web stream
     yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size: stat.size }
   } else if (stat.isDirectory()) {
-    yield * filesFromDir(name, filter, options)
+    for await (const file of filesFromDir(name, filter, options)) {
+      yield {
+        // normalise file path on windows
+        name: path.sep === '\\'
+          ? file.name.split(path.sep).join('/')
+          : file.name,
+        stream: () => file.stream(),
+        size: file.size
+      }
+    }
   }
 }
 
