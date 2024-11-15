@@ -66,7 +66,13 @@ export async function filesFromPaths (paths, options) {
     }
   }
   const commonPath = `${(commonParts ?? []).join('/')}/`
-  const commonPathFiles = files.map(f => ({ ...f, name: f.name.slice(commonPath.length) }))
+  const commonPathFiles = files.map(f => ({
+    ...f,
+    // normalize file path on windows
+    name: path.sep === '\\'
+      ? f.name.split(path.sep).join('/').slice(commonPath.length)
+      : f.name.slice(commonPath.length)
+  }))
   return options?.sort == null || options?.sort === true
     ? commonPathFiles.sort((a, b) => a.name === b.name ? 0 : a.name > b.name ? 1 : -1)
     : commonPathFiles

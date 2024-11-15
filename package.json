@@ -12,12 +12,12 @@
     "build:js": "ipjs build --main && npm run build:copy",
     "build:copy": "cp -a tsconfig.json src test dist/ ",
     "build:types": "npm run build:copy && cd dist && tsc --build",
-    "test": "ava --verbose 'test/*.spec.js' --timeout 30s",
+    "test": "ava --verbose test/test.spec.js --timeout 30s",
     "lint": "standard"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/web3-storage/files-from-path.git"
+    "url": "git+https://github.com/storacha/files-from-path.git"
   },
   "standard": {
     "ignore": [
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/graceful-fs": "^4.1.6",
     "@types/node": "^20.9.0",
-    "ava": "^5.2.0",
+    "ava": "^6.2.0",
     "ipjs": "^5.0.3",
     "standard": "^17.0.0",
     "typescript": "^5.2.2",
