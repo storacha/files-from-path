@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/storacha/files-from-path/compare/v1.0.4...v1.1.0) (2024-11-15)
+
+
+### Features
+
+* normalise paths for windows file paths ([#38](https://github.com/storacha/files-from-path/issues/38)) ([41bb5c5](https://github.com/storacha/files-from-path/commit/41bb5c5221bea361aaec1a542c10b8d80658d907))
+
 ## [1.0.4](https://github.com/web3-storage/files-from-path/compare/v1.0.3...v1.0.4) (2023-12-07)
 
 
