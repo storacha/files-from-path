@@ -36,7 +36,7 @@ console.log(files)
 
 ## API
 
-### filesFromPaths
+### `filesFromPaths`
 
 The following parameters can be provided to `filesFromPaths`:
 
