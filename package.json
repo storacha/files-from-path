@@ -27,7 +27,8 @@
   "exports": {
     ".": {
       "browser": "./src/index.browser.js",
-      "import": "./src/index.js"
+      "import": "./src/index.js",
+      "types": "./types/index.d.ts"
     }
   },
   "dependencies": {
