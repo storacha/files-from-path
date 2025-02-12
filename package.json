@@ -1,6 +1,6 @@
 {
   "name": "files-from-path",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Expand paths to file-like objects with name, readable stream and size.",
   "main": "src/index.js",
   "types": "./types/index.d.ts",
@@ -27,7 +27,8 @@
   "exports": {
     ".": {
       "browser": "./src/index.browser.js",
-      "import": "./src/index.js"
+      "import": "./src/index.js",
+      "types": "./types/index.d.ts"
     }
   },
   "dependencies": {

@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.2](https://github.com/storacha/files-from-path/compare/v1.1.1...v1.1.2) (2025-02-11)
+
+
+### Bug Fixes
+
+* Add missing `types` key to package entry point ([#41](https://github.com/storacha/files-from-path/issues/41)) ([b645e00](https://github.com/storacha/files-from-path/commit/b645e005503e8d55e94b6f97e689e32415b0e2bc))
+
+## [1.1.1](https://github.com/storacha/files-from-path/compare/v1.1.0...v1.1.1) (2024-11-15)
+
+
+### Bug Fixes
+
+* docs ([ac4fb2d](https://github.com/storacha/files-from-path/commit/ac4fb2da2178eddcf6ce613a57a91990d347c3e9))
+
 ## [1.1.0](https://github.com/storacha/files-from-path/compare/v1.0.4...v1.1.0) (2024-11-15)
 
 
