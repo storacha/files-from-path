@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/storacha/files-from-path/compare/v1.1.2...v1.1.3) (2025-02-12)
+
+
+### Bug Fixes
+
+* github URLs ([51f7007](https://github.com/storacha/files-from-path/commit/51f7007fdad3685cd28e36b8a1242294415c2915))
+
 ## [1.1.2](https://github.com/storacha/files-from-path/compare/v1.1.1...v1.1.2) (2025-02-11)
 
 
