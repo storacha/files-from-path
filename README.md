@@ -2,7 +2,7 @@
 
 > Expand paths to file-like objects with name, readable stream and size.
 
-[![Build](https://github.com/web3-storage/files-from-path/actions/workflows/main.yml/badge.svg)](https://github.com/web3-storage/files-from-path/actions/workflows/main.yml)
+[![Build](https://github.com/storacha/files-from-path/actions/workflows/main.yml/badge.svg)](https://github.com/storacha/files-from-path/actions/workflows/main.yml)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![Downloads](https://img.shields.io/npm/dm/files-from-path.svg)](https://www.npmjs.com/package/files-from-path)
 
@@ -63,8 +63,8 @@ Releasing to npm is done via [`release-please`](https://github.com/googleapis/re
 
 ## Contributing
 
-Feel free to join in. All welcome. Please [open an issue](https://github.com/web3-storage/files-from-path/issues)!
+Feel free to join in. All welcome. Please [open an issue](https://github.com/storacha/files-from-path/issues)!
 
 ## License
 
-Dual-licensed under [Apache 2.0 OR MIT](https://github.com/web3-storage/files-from-path/blob/main/LICENSE.md)
+Dual-licensed under [Apache 2.0 OR MIT](https://github.com/storacha/files-from-path/blob/main/LICENSE.md)
