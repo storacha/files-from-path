@@ -67,6 +67,14 @@ test('allows read of more files than ulimit maxfiles', async t => {
   }
 })
 
+test('excludes files that do not match a filter', async (t) => {
+  const files = await filesFromPaths(['test/fixtures/dir/file2.txt', './test/fixtures/empty.car'], {
+    filter: (fullPath) => fullPath !== Path.resolve('./test/fixtures/empty.car')
+  })
+  t.is(files.length, 1)
+  t.is(files[0].name, 'file2.txt')
+})
+
 test('uses custom fs implementation', async t => {
   // it uses graceful-fs by default so passing node:fs is legit test
   const files = await filesFromPaths([`${process.cwd()}/test/fixtures`], { fs })

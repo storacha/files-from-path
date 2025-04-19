@@ -40,6 +40,7 @@ const defaultfs = {
  * @param {boolean} [options.hidden]
  * @param {boolean} [options.sort] Sort by path. Default: true.
  * @param {FileSystem} [options.fs] Custom FileSystem implementation.
+ * @param {(fullPath: string) => boolean} [options.filter] filter discovered files
  * @returns {Promise<FileLike[]>}
  */
 export async function filesFromPaths (paths, options) {
@@ -83,6 +84,7 @@ export async function filesFromPaths (paths, options) {
  * @param {object} [options]
  * @param {boolean} [options.hidden]
  * @param {FileSystem} [options.fs] Custom FileSystem implementation.
+ * @param {(fullPath: string) => boolean} [options.filter] filter discovered files
  * @returns {AsyncIterableIterator<FileLike>}
  */
 async function * filesFromPath (filepath, options) {
@@ -93,7 +95,7 @@ async function * filesFromPath (filepath, options) {
   /** @param {string} filepath */
   const filter = filepath => {
     if (!hidden && path.basename(filepath).startsWith('.')) return false
-    return true
+    return !options || !options.filter || options.filter(filepath)
   }
 
   const name = filepath
