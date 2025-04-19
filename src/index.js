@@ -124,17 +124,17 @@ async function * filesFromDir (dir, filter, options) {
   const fs = options?.fs ?? defaultfs
   const entries = await fs.promises.readdir(path.join(dir), { withFileTypes: true })
   for (const entry of entries) {
-    if (!filter(entry.name)) {
+    const name = path.join(dir, entry.name)
+    if (!filter(name)) {
       continue
     }
 
     if (entry.isFile()) {
-      const name = path.join(dir, entry.name)
       const { size } = await fs.promises.stat(name)
       // @ts-expect-error node web stream not type compatible with web stream
       yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size }
     } else if (entry.isDirectory()) {
-      yield * filesFromDir(path.join(dir, entry.name), filter)
+      yield * filesFromDir(name, filter)
     }
   }
 }
