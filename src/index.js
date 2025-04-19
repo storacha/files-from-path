@@ -40,6 +40,7 @@ const defaultfs = {
  * @param {boolean} [options.hidden]
  * @param {boolean} [options.sort] Sort by path. Default: true.
  * @param {FileSystem} [options.fs] Custom FileSystem implementation.
+ * @param {(fullPath: string) => boolean} [options.filter] filter discovered files
  * @returns {Promise<FileLike[]>}
  */
 export async function filesFromPaths (paths, options) {
@@ -83,6 +84,7 @@ export async function filesFromPaths (paths, options) {
  * @param {object} [options]
  * @param {boolean} [options.hidden]
  * @param {FileSystem} [options.fs] Custom FileSystem implementation.
+ * @param {(fullPath: string) => boolean} [options.filter] filter discovered files
  * @returns {AsyncIterableIterator<FileLike>}
  */
 async function * filesFromPath (filepath, options) {
@@ -93,7 +95,7 @@ async function * filesFromPath (filepath, options) {
   /** @param {string} filepath */
   const filter = filepath => {
     if (!hidden && path.basename(filepath).startsWith('.')) return false
-    return true
+    return !options || !options.filter || options.filter(filepath)
   }
 
   const name = filepath
@@ -122,17 +124,17 @@ async function * filesFromDir (dir, filter, options) {
   const fs = options?.fs ?? defaultfs
   const entries = await fs.promises.readdir(path.join(dir), { withFileTypes: true })
   for (const entry of entries) {
-    if (!filter(entry.name)) {
+    const name = path.join(dir, entry.name)
+    if (!filter(name)) {
       continue
     }
 
     if (entry.isFile()) {
-      const name = path.join(dir, entry.name)
       const { size } = await fs.promises.stat(name)
       // @ts-expect-error node web stream not type compatible with web stream
       yield { name, stream: () => Readable.toWeb(fs.createReadStream(name)), size }
     } else if (entry.isDirectory()) {
-      yield * filesFromDir(path.join(dir, entry.name), filter)
+      yield * filesFromDir(name, filter)
     }
   }
 }
